@@ -13,7 +13,7 @@ import math
 import matplotlib.pylab as mp
 import matplotlib.pyplot as plt
 import numpy as np
-
+from PIL import Image
     
 
 def returnModel(D_in, D_out):
@@ -29,8 +29,15 @@ def rescale(x, a, b):
 
 def showImage(grad):
     reshaped = np.reshape( rescale(grad[0:8742], 0, 1), (62, 47, 3))
-    plt.imshow(reshaped)
+    # plt.imshow(reshaped, cmap='gray')
+    # plt.show()
+    def rgb2gray(rgb):
+        return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
+
+    grayimage = rgb2gray(reshaped)
+    plt.imshow(grayimage, cmap=plt.get_cmap('gray'))
     plt.show()
+    pdb.set_trace()
 
 # Initialize Clients
 # First Client is the aggregator
@@ -59,7 +66,7 @@ def main():
         for i in range(10):
             grad, noisegrad = clients[i].getGrad()
             if iter % 10 == 0 and iter != 0: 
-                pdb.set_trace()
+                showImage(grad)
             clients[0].updateGrad(noisegrad)
 
         

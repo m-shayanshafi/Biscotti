@@ -80,6 +80,7 @@ class Client():
                     # pdb.set_trace()
                     layers = np.concatenate((layers, param.grad.numpy().flatten()), axis=None)
             # layers += self.getNoise()
+            layers = layers / max(1, np.linalg.norm(layers))
             return layers, layers + self.getNoise()
 
     
