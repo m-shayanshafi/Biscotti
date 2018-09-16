@@ -12,11 +12,25 @@ import datasets
 import math
 import matplotlib.pylab as mp
 import matplotlib.pyplot as plt
+import numpy as np
+
+    
 
 def returnModel(D_in, D_out):
     model = SoftmaxModel(D_in, D_out)
     # model = LFWCNNModel()
     return model
+
+# rescales a numpy array to be in [a, b]
+def rescale(x, a, b):
+    minNum = np.min(x)
+    maxNum = np.max(x)
+    return (b - a)*(x - minNum) / (maxNum - minNum) + a 
+
+def showImage(grad):
+    reshaped = np.reshape( rescale(grad[0:8742], 0, 1), (62, 47, 3))
+    plt.imshow(reshaped)
+    plt.show()
 
 # Initialize Clients
 # First Client is the aggregator
@@ -27,7 +41,7 @@ def main():
     test_accuracy_rate = []
     D_in = datasets.get_num_features("lfw")
     D_out = datasets.get_num_classes("lfw")
-    batch_size = 4
+    batch_size = 1
     train_cut = 0.8
 
     print("Creating clients")
@@ -43,8 +57,13 @@ def main():
     for iter in range(iter_time):
         # Calculate and aggregaate gradients    
         for i in range(10):
-            clients[0].updateGrad(clients[i].getGrad())
+            grad, noisegrad = clients[i].getGrad()
+            if iter % 10 == 0 and iter != 0: 
+                pdb.set_trace()
+            clients[0].updateGrad(noisegrad)
+
         
+
         # Share updated model
         clients[0].step()
         modelWeights = clients[0].getModelWeights()

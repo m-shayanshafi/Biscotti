@@ -10,8 +10,8 @@ import matplotlib.pylab as mp
 import matplotlib.pyplot as plt
 
 def returnModel(D_in, D_out):
-    # model = SoftmaxModel(D_in, D_out)
-    model = MNISTCNNModel()
+    model = SoftmaxModel(D_in, D_out)
+    # model = MNISTCNNModel()
     return model
 
 # Initialize Clients
@@ -36,8 +36,14 @@ def main():
     for iter in range(iter_time):
         # Calculate and aggregaate gradients    
         for i in range(10):
-            clients[0].updateGrad(clients[i].getGrad())
+            grad = clients[i].getGrad()
+            clients[0].updateGrad(grad)
         
+
+        if iter % 10 == 0 and iter != 0: 
+            reshaped = np.reshape( rescale(grad[0:8742], 0, 2.55), (62, 47, 3))
+            pdb.set_trace()
+
         # Share updated model
         clients[0].step()
         modelWeights = clients[0].getModelWeights()

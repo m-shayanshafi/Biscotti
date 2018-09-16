@@ -7,11 +7,13 @@ from sklearn.metrics import accuracy_score
 import numpy as np
 import pdb
 import datasets
+import matplotlib.pyplot as plt
 
 class Client():
     def __init__(self, dataset, filename, batch_size, model, train_cut=.80):
         # initializes dataset
         self.batch_size=batch_size
+        self.dataset = dataset
         Dataset = datasets.get_dataset(dataset)
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         self.trainset = Dataset(filename, "../ML/Pytorch/data/" + dataset, is_train=True, train_cut=train_cut, transform=transform)
@@ -30,6 +32,17 @@ class Client():
         self.optimizer = optim.SGD(self.model.parameters(), lr=0.0001, momentum=0.5, weight_decay=0.001) # lfw_softmax
         self.aggregatedGradients = []
         self.loss = 0.0
+
+
+    def getNoise(self):
+        epsilon = 4
+        nParams = datasets.get_num_params(self.dataset)
+        
+        sigma = np.sqrt(2 * np.log(1.25)) / epsilon
+        noise = sigma * np.random.randn(self.batch_size, nParams)
+        samples = np.sum(noise, axis=0)
+        return samples
+
 
     # TODO:: Get noise for diff priv
     def getGrad(self):
@@ -53,13 +66,21 @@ class Client():
             nn.utils.clip_grad_norm(self.model.parameters(), 100)
             self.loss = loss.item()
 
+
+            def rescale(x, a, b):
+                minNum = np.min(x)
+                maxNum = np.max(x)
+                return (b - a)*(x - minNum) / (maxNum - minNum) + a 
+
             # TODO: Find more efficient way to flatten params
             # get gradients into layers
             layers = np.zeros(0)
             for name, param in self.model.named_parameters():
                 if param.requires_grad:
+                    # pdb.set_trace()
                     layers = np.concatenate((layers, param.grad.numpy().flatten()), axis=None)
-            return layers
+            # layers += self.getNoise()
+            return layers, layers + self.getNoise()
 
     
     # Called when an aggregator receives a new gradient
@@ -146,3 +167,4 @@ class Client():
         # y_hat = torch.argmax(pred, dim=1)
         # return 1 - accuracy_score(y, y_hat)
 
+  

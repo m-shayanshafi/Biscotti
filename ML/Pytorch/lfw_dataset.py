@@ -36,10 +36,13 @@ class LFWDataset(Dataset):
     def __getitem__(self, idx):
 
         sample = np.reshape(self.X[idx], (62, 47, 3))
-
-        if self.transform:
-            sample = self.transform(sample)
-        
+        # if self.transform:
+        #     sample = self.transform(sample)
+        # def rescale(x, a, b):
+        #     minNum = np.min(x)
+        #     maxNum = np.max(x)
+        #     return (b - a)*(x - minNum) / (maxNum - minNum) + a 
+        # pdb.set_trace()
         return {'image': sample, 'label': self.y[idx]}
     
     def getData(self):
