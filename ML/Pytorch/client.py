@@ -35,7 +35,7 @@ class Client():
 
 
     def getNoise(self):
-        epsilon = 4
+        epsilon = 6
         nParams = datasets.get_num_params(self.dataset)
         
         sigma = np.sqrt(2 * np.log(1.25)) / epsilon
@@ -80,7 +80,7 @@ class Client():
                     # pdb.set_trace()
                     layers = np.concatenate((layers, param.grad.numpy().flatten()), axis=None)
             # layers += self.getNoise()
-            layers = layers / max(1, np.linalg.norm(layers))
+            # layers = layers / max(1, np.linalg.norm(layers))
             return layers, layers + self.getNoise()
 
     

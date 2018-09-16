@@ -16,6 +16,7 @@ import numpy as np
 from PIL import Image
     
 
+
 def returnModel(D_in, D_out):
     model = SoftmaxModel(D_in, D_out)
     # model = LFWCNNModel()
@@ -28,16 +29,37 @@ def rescale(x, a, b):
     return (b - a)*(x - minNum) / (maxNum - minNum) + a 
 
 def showImage(grad):
-    reshaped = np.reshape( rescale(grad[0:8742], 0, 1), (62, 47, 3))
+    reshaped = np.reshape( grad[0:8742], (62, 47, 3))
     # plt.imshow(reshaped, cmap='gray')
     # plt.show()
+    from skimage import color
+    from skimage import io
+    img = color.rgb2gray(reshaped)
+
     def rgb2gray(rgb):
         return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
-    grayimage = rgb2gray(reshaped)
-    plt.imshow(grayimage, cmap=plt.get_cmap('gray'))
+    plt.imshow(img, cmap=plt.get_cmap('gray'))
     plt.show()
+    return img
+
+def varyEpsilonShowImage(grad, x, y, step):
     pdb.set_trace()
+  
+    for epsilon in range(x, y, step):
+        sigma = np.sqrt(2 * np.log(1.25)) / epsilon
+        noise = sigma * np.random.randn(batch_size, nParams)
+        samples = np.sum(noise, axis=0)
+
+        showImage(grad + samples)
+        # plt.imshow(image, cmap=plt.get_cmap('gray'))
+        # plt.show()
+    
+
+
+    
+
+
 
 # Initialize Clients
 # First Client is the aggregator
@@ -48,7 +70,12 @@ def main():
     test_accuracy_rate = []
     D_in = datasets.get_num_features("lfw")
     D_out = datasets.get_num_classes("lfw")
+    
+    global batch_size
     batch_size = 1
+    global nParams 
+    nParams = datasets.get_num_params("lfw")
+
     train_cut = 0.8
 
     print("Creating clients")
@@ -65,8 +92,8 @@ def main():
         # Calculate and aggregaate gradients    
         for i in range(10):
             grad, noisegrad = clients[i].getGrad()
-            if iter % 10 == 0 and iter != 0: 
-                showImage(grad)
+
+            pdb.set_trace()
             clients[0].updateGrad(noisegrad)
 
         
