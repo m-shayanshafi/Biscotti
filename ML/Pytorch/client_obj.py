@@ -65,7 +65,7 @@ def init(dataset, filename, epsilon, batch_size):
     else:
 
         samples = np.zeros((expected_iters, nParams))
-
+        
     return nParams
 
 # returns flattened gradient

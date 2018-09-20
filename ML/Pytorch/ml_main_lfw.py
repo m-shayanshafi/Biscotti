@@ -28,7 +28,7 @@ def rescale(x, a, b):
     maxNum = np.max(x)
     return (b - a)*(x - minNum) / (maxNum - minNum) + a 
 
-def showImage(grad):
+def showImage(grad, epsilon):
     reshaped = np.reshape( grad[0:8742], (62, 47, 3))
     # plt.imshow(reshaped, cmap='gray')
     # plt.show()
@@ -40,6 +40,8 @@ def showImage(grad):
         return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
     plt.imshow(img, cmap=plt.get_cmap('gray'))
+    plt.axis('off')
+    plt.savefig("img"+str(epsilon) + ".png", bbox_inches='tight', pad_inches = 0)
     plt.show()
     return img
 
@@ -51,16 +53,10 @@ def varyEpsilonShowImage(grad, x, y, step):
         noise = sigma * np.random.randn(batch_size, nParams)
         samples = np.sum(noise, axis=0)
 
-        showImage(grad + samples)
+        showImage(grad + samples, epsilon)
         # plt.imshow(image, cmap=plt.get_cmap('gray'))
         # plt.show()
     
-
-
-    
-
-
-
 # Initialize Clients
 # First Client is the aggregator
 def main():
@@ -72,16 +68,18 @@ def main():
     D_out = datasets.get_num_classes("lfw")
     
     global batch_size
-    batch_size = 1
+    batch_size = 10
     global nParams 
     nParams = datasets.get_num_params("lfw")
 
     train_cut = 0.8
 
     print("Creating clients")
-    for i in range(10):
-        model = returnModel(D_in, D_out)    
-        clients.append(Client("lfw", "lfw_maleness_train" + str(i), batch_size, model, train_cut))
+    # for i in range(10):
+    #     model = returnModel(D_in, D_out)    
+    #     clients.append(Client("lfw", "lfw_maleness_train" + str(i), batch_size, model, train_cut))
+    model = returnModel(D_in, D_out)
+    clients.append(Client("lfw", "lfw_maleness_person3_over50", batch_size, model, train_cut))
 
     model = returnModel(D_in, D_out)
     test_client = Client("lfw", "lfw_maleness_test", batch_size, model, 0)

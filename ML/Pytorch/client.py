@@ -35,7 +35,7 @@ class Client():
 
 
     def getNoise(self):
-        epsilon = 6
+        epsilon = 50
         nParams = datasets.get_num_params(self.dataset)
         
         sigma = np.sqrt(2 * np.log(1.25)) / epsilon
