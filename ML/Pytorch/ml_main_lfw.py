@@ -68,7 +68,7 @@ def main():
     D_out = datasets.get_num_classes("lfw")
     
     global batch_size
-    batch_size = 10
+    batch_size = 20
     global nParams 
     nParams = datasets.get_num_params("lfw")
 
@@ -79,7 +79,7 @@ def main():
     #     model = returnModel(D_in, D_out)    
     #     clients.append(Client("lfw", "lfw_maleness_train" + str(i), batch_size, model, train_cut))
     model = returnModel(D_in, D_out)
-    clients.append(Client("lfw", "lfw_maleness_person3_over50", batch_size, model, train_cut))
+    clients.append(Client("lfw", "lfw_maleness_person61_over20", batch_size, model, train_cut))
 
     model = returnModel(D_in, D_out)
     test_client = Client("lfw", "lfw_maleness_test", batch_size, model, 0)
@@ -88,7 +88,7 @@ def main():
     print("Training for iterations")
     for iter in range(iter_time):
         # Calculate and aggregaate gradients    
-        for i in range(10):
+        for i in range(1):
             grad, noisegrad = clients[i].getGrad()
 
             pdb.set_trace()
@@ -99,13 +99,13 @@ def main():
         # Share updated model
         clients[0].step()
         modelWeights = clients[0].getModelWeights()
-        for i in range(10):
+        for i in range(1):
             clients[i].updateModel(modelWeights)
         
         # Print average loss across clients
         if iter % 100 == 0:
             loss = 0.0
-            for i in range(10):
+            for i in range(1):
                 loss += clients[i].getLoss()
             print("Average loss is " + str(loss / len(clients)))
             test_client.updateModel(modelWeights)

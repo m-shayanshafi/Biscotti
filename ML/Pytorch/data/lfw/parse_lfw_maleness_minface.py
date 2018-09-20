@@ -11,8 +11,8 @@ def rescale(x, a, b):
 
 
 MALENESS_THRESHOLD = 0 # threshold at which the person is classified as a male
-MIN_FACES = 50
-TRAIN_CUT = 0.75
+MIN_FACES = 20
+TRAIN_CUT = 0.99
 
 print("Fetching people with at least " + str(MIN_FACES) + " pictures.")
 lfw_people = fetch_lfw_people(color=True, min_faces_per_person=MIN_FACES)
@@ -21,8 +21,9 @@ print("Loading maleness attributes")
 maleness_lookup = np.load('lfw_maleness.npy').item()
 
 # downloads all faces with more than 5 images
-person = 3
+person = 61
 target_names = lfw_people.target_names
+pdb.set_trace()
 target = lfw_people.target
 data = lfw_people.data
 data = lfw_people.data[lfw_people.target == person]
@@ -42,7 +43,7 @@ for i in range(n):
 print("Storing data and labels")
 
 data_slice = np.hstack((data, y[:, None]))
-np.save("lfw_maleness_person3_over50", data_slice)
+np.save("lfw_maleness_person61_over20", data_slice)
 # TODO: Randomly shuffle data_slice before
 # np.save("lfw_maleness_train", data_slice[0:int(n*TRAIN_CUT)])
 # split into num_client parts
