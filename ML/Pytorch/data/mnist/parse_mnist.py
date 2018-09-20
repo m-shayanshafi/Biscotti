@@ -98,8 +98,10 @@ def slice_for_tm():
         data_slice = np.hstack((class_slice, ytrain[idx][:, None]))
 
         print("slice " + str(k) + " is shape " + str(data_slice.shape))
-
-        np.save("mnist_digit" + str(k), data_slice)
+        fold = data_slice.shape[0]/4
+        # splitting into 4 parts so total of 40 splits
+        for s in range(4):
+            np.save("mnist_digit" + str(k) + "_" + str(s), data_slice[s*fold:(s+1)*fold])
 
     train_slice = np.hstack((Xtrain, np.reshape(ytrain, (len(ytrain), 1))))
     np.save("mnist_train", train_slice)
@@ -148,14 +150,54 @@ def slice_uniform(numSplits):
         print("slice " + str(i) + " is shape " + str
             (dataslice.shape))
 
-        for mult in range(10):
-            np.save("mnist" + str(i + 10 * mult), dataslice)
+        for mult in range(1):
+            np.save("mnist" + str(i), dataslice)
         
     train_slice = np.hstack((Xtrain, np.reshape(ytrain, (len(ytrain), 1))))
     np.save("mnist_train", train_slice)
 
     test_slice = np.hstack((Xtest, np.reshape(ytest, (len(ytest), 1))))
     np.save("mnist_test", test_slice)
+
+def generate_bad_single(numExamples):
+    mndata = MNIST('.')
+
+    images, labels = mndata.load_training()
+    images_test, labels_test = mndata.load_testing()
+
+    n = len(images)
+    d = len(images[0])
+    t = len(images_test)
+
+    Xtrain = np.zeros((n, d))
+    Xtest = np.zeros((t, d))
+
+    ytrain = np.asarray(labels)
+    ytest = np.asarray(labels_test)
+
+    for i in range(n):
+        Xtrain[i, :] = np.asarray(images[i])
+
+    for q in range(t):
+        Xtest[q, :] = np.asarray(images_test[q])
+
+    # standardize each column
+    print("Standardize columns")
+    # Xtrain = Xtrain / 100.0
+    Xtrain, _, _ = standardize_cols(Xtrain)
+    Xtest, _, _ = standardize_cols(Xtest)
+
+    
+
+    k = 1
+    idx = np.where((ytrain == k))[0]
+    class_slice = Xtrain[idx]
+    data_slice = np.hstack((class_slice, ytrain[idx][:, None]))
+    data_slice[:, -1] = 7
+    print("slice " + str(k) + " is shape " + str(data_slice.shape))
+    # splitting into 4 parts so total of 40 splits
+    np.save('mnist_bad_single_1_7', data_slice)
+
 
 
 # Inject multiple  classes into each file
@@ -233,19 +275,32 @@ def standardize_cols(X, mu=None, sigma=None):
     return (X - mu) / sigma, mu, sigma
 
 
+
 if __name__ == "__main__":
     
-    slice_for_tm()
+    # slice_uniform(40)
+    # generate_bad_single(1500)
+
+    #uniform bad 1_7
+    data = np.load('mnist0.npy')
+    data[:, -1][data[:, -1] == 1] = 7
+    np.save('mnist_bad_uniform_1_7', data)
+
+    # attackset for 1_7
+    data = np.load('mnist_test.npy')
+    np.save('mnist_attackset_1_7', data[data[:, -1] == 1])
+
 
     # Set up a 1-7
-    data = np.load("mnist_digit1.npy")
-    data[:, -1] = 7
+    # data = np.load("mnist_digit1_1.npy")
+    # data[:, -1] = 7
 
-    np.save("mnist_bad_17", data)
+    # np.save("mnist_bad_17", data)
 
-    # Set up a 1-7
-    data = np.load("mnist17.npy")
-    data[:, -1] = (data[:, -1] + 1) % 10
-
-    np.save("mnist_bad_full", data)
+    # # Set up a 1-7
+    # data = np.load("mnist7.npy")
+    # # pdb.set_trace()
+    # data[data[:, -1] == 1][:, -1] = 7
+    # # data[:, -1] = (data[:, -1] + 1) % 10
+    # np.save("mnist_bad_full", data)
 

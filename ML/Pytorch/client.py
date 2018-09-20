@@ -19,7 +19,7 @@ class Client():
         self.attackset = Dataset("mnist_digit1", "../ML/Pytorch/data/" + dataset, is_train=False, transform=transform)
         self.trainloader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batch_size, shuffle=True)
         self.testloader = torch.utils.data.DataLoader(self.testset, batch_size=len(self.testset), shuffle=False)
-        self.attackloader = torch.utils.data.DataLoader(self.attackset, batch_size=len(self.testset), shuffle=False)
+        self.attackloader = torch.utils.data.DataLoader(self.attackset, batch_size=len(self.attackset), shuffle=False)
 
         self.model = model
 

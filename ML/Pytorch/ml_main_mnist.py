@@ -29,16 +29,16 @@ def main():
     average_loss = []
     D_in = datasets.get_num_features("mnist")
     D_out = datasets.get_num_classes("mnist")
-    batch_size = 10
+    batch_size = 500
     train_cut = 0.8
 
-    for i in range(6):
+    for i in range(10):
         model = returnModel(D_in, D_out)
         clients.append(Client("mnist", "mnist" + str(i), batch_size, model, train_cut))
 
-    for i in range(4):
+    for i in range(10):
         model = returnModel(D_in, D_out)
-        clients.append(Client("mnist", "mnist_bad_full", batch_size, model, train_cut))
+        clients.append(Client("mnist", "mnist_bad_17", batch_size, model, train_cut))
 
     model = returnModel(D_in, D_out)
     test_client = Client("mnist", "mnist_test", batch_size, model, 0)
@@ -46,7 +46,7 @@ def main():
     rejections = np.zeros(10)
 
     for iter in range(iter_time):
-        
+        print(iter)
         modelWeights = clients[0].getModelWeights()
         # Calculate and aggregaate gradients    
         for i in range(10):
@@ -64,7 +64,7 @@ def main():
             clients[i].updateModel(modelWeights)
 
         # Print average loss across clients
-        if iter % 100 == 0:
+        if iter % 10 == 0:
             
             loss = 0.0
             for i in range(10):
