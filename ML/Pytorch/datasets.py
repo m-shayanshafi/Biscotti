@@ -19,7 +19,7 @@ def get_num_params(dataset):
     if dataset == "mnist":
         return 7850
     elif dataset == "lfw":
-        return 18254
+        return 8742*2 + 2
     elif dataset == "cifar":
         return -1 # Find out how many.
     elif dataset == "creditcard":
@@ -43,11 +43,10 @@ def get_num_classes(dataset):
     if dataset == "mnist":
         return 10
     elif dataset == "lfw":
-        return 12
+        return 2
     elif dataset == "cifar":
         return 10
     elif dataset == "creditcard":
         return 2
     else: 
         print("Error: dataset " + dataset + "not defined")
-        

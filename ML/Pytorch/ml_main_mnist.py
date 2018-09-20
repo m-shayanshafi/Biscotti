@@ -56,7 +56,8 @@ def main():
             print "Client " + str(i) + " RONI is " + str(roni)
             if roni > 0.02:
                 rejections[i] += 1
-            clients[0].updateGrad(grad)
+            else:
+                clients[0].updateGrad(grad)
 
         # Share updated model
         clients[0].step()

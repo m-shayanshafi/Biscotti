@@ -12,6 +12,7 @@ class Client():
     def __init__(self, dataset, filename, batch_size, model, train_cut=.80):
         # initializes dataset
         self.batch_size=batch_size
+        self.dataset = dataset
         Dataset = datasets.get_dataset(dataset)
         # transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         transform = transforms.Compose([transforms.ToTensor()])
@@ -35,6 +36,17 @@ class Client():
         self.aggregatedGradients = []
         self.loss = 0.0
 
+    
+    def getNoise(self):
+        epsilon = 5
+        nParams = datasets.get_num_params(self.dataset)
+        
+        sigma = np.sqrt(2 * np.log(1.25)) / epsilon
+        noise = sigma * np.random.randn(self.batch_size, nParams)
+        samples = np.sum(noise, axis=0)
+        return samples
+
+
     # TODO:: Get noise for diff priv
     def getGrad(self):
         for i, data in enumerate(self.trainloader, 0):
@@ -57,12 +69,22 @@ class Client():
             nn.utils.clip_grad_norm(self.model.parameters(), 100)
             self.loss = loss.item()
 
+
+            def rescale(x, a, b):
+                minNum = np.min(x)
+                maxNum = np.max(x)
+                return (b - a)*(x - minNum) / (maxNum - minNum) + a 
+
             # TODO: Find more efficient way to flatten params
             # get gradients into layers
             layers = np.zeros(0)
             for name, param in self.model.named_parameters():
                 if param.requires_grad:
+                    # pdb.set_trace()
                     layers = np.concatenate((layers, param.grad.numpy().flatten()), axis=None)
+            # layers += self.getNoise()
+            # layers = layers / max(1, np.linalg.norm(layers))
+            # return layers + self.getNoise()
             return layers
 
     
@@ -135,7 +157,6 @@ class Client():
         return self.model
     
     def roni(self, modelWeights, update):
-        
         self.updateModel(modelWeights)
         score1 = self.getTestErr()
 
