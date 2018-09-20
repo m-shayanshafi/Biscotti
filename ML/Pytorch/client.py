@@ -15,8 +15,8 @@ class Client():
         Dataset = datasets.get_dataset(dataset)
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         self.trainset = Dataset(filename, "../ML/Pytorch/data/" + dataset, is_train=True, transform=transform)
-        self.testset = Dataset("mnist_test", "../ML/Pytorch/data/" + dataset, is_train=False, transform=transform)
-        self.attackset = Dataset("mnist_digit1", "../ML/Pytorch/data/" + dataset, is_train=False, transform=transform)
+        self.testset = Dataset("mnist_test", "../ML/Pytorch/data/" + dataset, is_train=False, transform=transform, train_cut=0)
+        self.attackset = Dataset("mnist_attackset_1_7", "../ML/Pytorch/data/" + dataset, is_train=False, transform=transform, train_cut=0)
         self.trainloader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batch_size, shuffle=True)
         self.testloader = torch.utils.data.DataLoader(self.testset, batch_size=len(self.testset), shuffle=False)
         self.attackloader = torch.utils.data.DataLoader(self.attackset, batch_size=len(self.attackset), shuffle=False)
@@ -171,7 +171,9 @@ class Client():
             inputs, labels = Variable(inputs), Variable(labels)
             out = self.model(inputs)
             pred = np.argmax(out.detach().numpy(), axis=1)
-        return 1 - accuracy_score(pred, labels)
+            
+            pdb.set_trace()
+        return np.average(pred == 7)
 
 
         # X, y = self.testset.getData()

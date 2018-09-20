@@ -29,16 +29,16 @@ def main():
     average_loss = []
     D_in = datasets.get_num_features("mnist")
     D_out = datasets.get_num_classes("mnist")
-    batch_size = 500
+    batch_size = 10
     train_cut = 0.8
 
     for i in range(10):
         model = returnModel(D_in, D_out)
         clients.append(Client("mnist", "mnist" + str(i), batch_size, model, train_cut))
 
-    for i in range(10):
+    for i in range(40):
         model = returnModel(D_in, D_out)
-        clients.append(Client("mnist", "mnist_bad_17", batch_size, model, train_cut))
+        clients.append(Client("mnist", "mnist_bad_single_1_7", batch_size, model, train_cut))
 
     model = returnModel(D_in, D_out)
     test_client = Client("mnist", "mnist_test", batch_size, model, 0)
