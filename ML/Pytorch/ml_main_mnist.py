@@ -29,34 +29,35 @@ def main():
     average_loss = []
     D_in = datasets.get_num_features("mnist")
     D_out = datasets.get_num_classes("mnist")
-    batch_size = 50
+    batch_size = 500
     train_cut = 0.8
 
-    for i in range(10):
+    for i in range(6):
         model = returnModel(D_in, D_out)
         clients.append(Client("mnist", "mnist" + str(i), batch_size, model, train_cut))
 
-    for i in range(20):
+    for i in range(4):
         model = returnModel(D_in, D_out)
         clients.append(Client("mnist", "mnist_bad_single_1_7_0", batch_size, model, train_cut))
 
     model = returnModel(D_in, D_out)
-    test_client = Client("mnist", "mnist_test", batch_size, model, 0)
+    test_client = Client("mnist", "mnist_test", batch_size, model, train_cut=0.01)
 
     rejections = np.zeros(10)
 
     for iter in range(iter_time):
         print(iter)
         modelWeights = clients[0].getModelWeights()
-        # Calculate and aggregaate gradients    
+        # Calculate and aggregaate gradients 
+   
         for i in range(10):
             grad = clients[i].getGrad()
-            # roni = test_client.roni(modelWeights, grad)
-            # print "Client " + str(i) + " RONI is " + str(roni)
-            # if roni > 0.02:
-            #     rejections[i] += 1
+            roni = test_client.roni(modelWeights, grad)
+            print "Client " + str(i) + " RONI is " + str(roni)
+            if roni > 0.02:
+                rejections[i] += 1
             clients[0].updateGrad(grad)
-        
+
         # Share updated model
         clients[0].step()
         modelWeights = clients[0].getModelWeights()

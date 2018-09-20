@@ -137,11 +137,10 @@ class Client():
     def roni(self, modelWeights, update):
         
         self.updateModel(modelWeights)
-        score1 = self.getTrainErr()
+        score1 = self.getTestErr()
 
-        self.updateModel(modelWeights + update)
-        score2 = self.getTrainErr()
-
+        self.updateModel(modelWeights - update)
+        score2 = self.getTestErr()
         return score2 - score1
 
     def getTrainErr(self):
