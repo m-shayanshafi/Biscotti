@@ -196,7 +196,9 @@ def generate_bad_single(numExamples):
     data_slice[:, -1] = 7
     print("slice " + str(k) + " is shape " + str(data_slice.shape))
     # splitting into 4 parts so total of 40 splits
-    np.save('mnist_bad_single_1_7', data_slice)
+    cut = data_slice.shape[0]/10
+    for i in range(10):
+        np.save('mnist_bad_single_1_7_'+str(i), data_slice[i*cut:(i+1)*cut])
 
 
 
@@ -279,7 +281,7 @@ def standardize_cols(X, mu=None, sigma=None):
 if __name__ == "__main__":
     
     # slice_uniform(40)
-    # generate_bad_single(1500)
+    generate_bad_single(1500)
 
     #uniform bad 1_7
     data = np.load('mnist0.npy')
