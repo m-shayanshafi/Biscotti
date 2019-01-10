@@ -90,7 +90,7 @@ def main():
         # Calculate and aggregaate gradients    
         for i in range(1):
             grad, noisegrad = clients[i].getGrad()
-
+            
             pdb.set_trace()
             clients[0].updateGrad(noisegrad)
 

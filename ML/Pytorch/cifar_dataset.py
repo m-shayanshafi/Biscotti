@@ -36,11 +36,9 @@ class CIFARDataset(Dataset):
         return len(self.y)
 
     def __getitem__(self, idx):
-
         sample = np.reshape(self.X[idx], (32, 32, 3))
-
-        if self.transform:
-            sample = self.transform(sample)
+        # if self.transform:
+        #     sample = self.transform(sample)
         
         return {'image': sample, 'label': self.y[idx]}
     

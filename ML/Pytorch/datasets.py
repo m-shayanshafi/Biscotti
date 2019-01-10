@@ -21,7 +21,7 @@ def get_num_params(dataset):
     elif dataset == "lfw":
         return 8742*2 + 2
     elif dataset == "cifar":
-        return -1 # Find out how many.
+        return 30730 # Find out how many.
     elif dataset == "creditcard":
         return 50
     else:

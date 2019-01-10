@@ -12,8 +12,8 @@ from svm_model import SVMModel
 import datasets
 
 def returnModel(D_in, D_out):
-    # model = SoftmaxModel(D_in, D_out)
-    model = CIFARCNNModel()
+    model = SoftmaxModel(D_in, D_out)
+    # model = CIFARCNNModel()
     return model
 
 # Initialize Clients
