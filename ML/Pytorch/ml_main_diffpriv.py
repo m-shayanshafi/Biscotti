@@ -28,21 +28,21 @@ def rescale(x, a, b):
     maxNum = np.max(x)
     return (b - a)*(x - minNum) / (maxNum - minNum) + a 
 
-def showImage(grad, dataset, epsilon):
+def showImage(grad, dataset, batch_size, epsilon):
     # lfw
     # reshaped = np.reshape( grad[0:8742], (62, 47, 3))
     # cifar
-    
-    reshaped = np.reshape( rescale(grad[0:32*32*3], 0, 2.5), (32,32, 3))
+    dataclass = 5
+    reshaped = np.reshape( rescale(grad[32*32*3*dataclass:32*32*3*(dataclass+1)], 0, 2.5), (32,32, 3))
     
     # reshaped = np.transpose(np.reshape(grad[0:32*32*3], (3,32,32)), (1,2,0))
     #mnist
     # reshaped = np.reshape( grad[0:784], (28,28))
-    pdb.set_trace()
     if (dataset == 'mnist'):
         plt.imshow(reshaped, cmap='gray')
-    elif (dataset == 'cifar'):
-        plt.imshow(reshaped)
+        img = reshaped
+    # elif (dataset == 'cifar'):
+    #     plt.imshow(reshaped)
     else:
         from skimage import color
         from skimage import io
@@ -53,7 +53,7 @@ def showImage(grad, dataset, epsilon):
 
         plt.imshow(img, cmap=plt.get_cmap('gray'))
     plt.axis('off')
-    plt.savefig("img"+str(epsilon) + ".png", bbox_inches='tight', pad_inches = 0)
+    plt.savefig(dataset + "_batch_" + str(batch_size) + "_epsilon_" + str(epsilon) + ".png", bbox_inches='tight', pad_inches = 0)
     plt.show()
     return img
 
@@ -71,17 +71,18 @@ def varyEpsilonShowImage(grad, x, y, step):
     
 # Initialize Clients
 # First Client is the aggregator
-def main():
+def main(bs):
     ### Parameters ###
-    dataset = "cifar"
-    dataclass = "cifar0"
-    # dataclass = "lfw_maleness_person61_over20"
+    # dataset = "mnist"
     # dataclass = "mnist_digit0"
+    
+    dataset = "cifar"
+    dataclass = "cifar5"
+    # dataclass = "lfw_maleness_person61_over20"
     global batch_size
-    batch_size = 1
+    batch_size = bs
 
-
-    iter_time = 1500
+    iter_time = 1
     clients = []
     average_loss = []
     test_accuracy_rate = []
@@ -109,9 +110,9 @@ def main():
         # Calculate and aggregaate gradients    
         for i in range(1):
             grad, noisegrad = clients[i].getGrad()
-            cl = 1
-            imagegrad = grad[32*32*3*cl:32*32*3*(cl+1)]
-            pdb.set_trace()
+            # cl = 1
+            # imagegrad = grad[32*32*3*cl:32*32*3*(cl+1)]
+            showImage(grad, dataset, batch_size, 0)
             clients[0].updateGrad(noisegrad)
 
         
@@ -159,4 +160,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    for batchsize in [1,2,5,10,15,20]:
+    # for batchsize in [1]:
+        print("Batchsize: " + str(batchsize))
+        main(batchsize)
