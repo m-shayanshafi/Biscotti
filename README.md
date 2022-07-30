@@ -18,7 +18,19 @@ In the DistSys Directory run the following:
 For example,  
 `sudo go run *.go -i 0 -t 4 -d creditcard`  
 
-Runs a node with Id 0 in a network of 4 nodes each with a part of the creditcard dataset  
+Runs a node with Id 0 in a network of 4 nodes each with a part of the credit card dataset  
 Node Ids start from 0 upto (numberOfNodes - 1)
   
+  
+# Biscotti: machine learning on the blockchain
+
+Biscotti is a fully decentralized peer-to-peer system for multi-party machine learning (ML). Peers participate in the learning process by contributing (possibly private) datasets and coordinating in training a global model of the union of their datasets. Biscotti uses blockchain primitives for coordination between peers and relies on differential privacy and cryptography techniques to provide privacy and security guarantees to peers.
+
+For more details about Biscotti's design, see our [Arxiv paper](https://arxiv.org/abs/1811.09904).
+
+# Dependencies
+
+We use the the go-python library for interfacing between the distributed system code in Go and the ML logic in Python. Unfortunately, Go-python doesn't support Python versions > 2.7.12. Please ensure that your default OS Python version is 2.7.12.
+
+
 
